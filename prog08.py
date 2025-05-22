@@ -1,25 +1,23 @@
-import numpy as np
-import matplotlib.pyplot as plt
-from sklearn.datasets import load_breast_cancer
-from sklearn.model_selection import train_test_split
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.metrics import accuracy_score
-from sklearn import tree
-
-data = load_breast_cancer()
-X = data.data
-y = data.target
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-clf = DecisionTreeClassifier(random_state=42)
-clf.fit(X_train, y_train)
-y_pred = clf.predict(X_test)
-accuracy = accuracy_score(y_test, y_pred)
-print(f"Model Accuracy: {accuracy * 100:.2f}%")
-new_sample = np.array([X_test[0]])
-prediction = clf.predict(new_sample)
-prediction_class = "Benign" if prediction == 1 else "Malignant"
-print(f"Predicted Class for the new sample: {prediction_class}")
-plt.figure(figsize=(12,8))
-tree.plot_tree(clf, filled=True, feature_names=data.feature_names, class_names=data.target_names)
-plt.title("Decision Tree - Breast Cancer Dataset")
-plt.show()
+text = """
+Hadoop MapReduce is a software framework for easily writing applications
+which process vast amounts of data in parallel on large clusters of
+commodity hardware in a reliable fault-tolerant manner
+"""
+def mapper(line):
+    words = line.strip().split()
+    return [(word, 1) for word in words]
+from collections import defaultdict
+mapped = []
+for line in text.strip().split('\n'):
+    mapped.extend(mapper(line))
+shuffle_sort = defaultdict(list)
+for word, count in mapped:
+    shuffle_sort[word].append(count)
+def reducer(shuffled_data):
+    reduced = {}
+    for word, counts in shuffled_data.items():
+        reduced[word] = sum(counts)
+    return reduced
+word_counts = reducer(shuffle_sort)
+for word, count in word_counts.items():
+    print(f"{word}\t{count}")
